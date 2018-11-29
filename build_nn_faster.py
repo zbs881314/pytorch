@@ -19,7 +19,7 @@ print(net1)
 # method2
 net2 = torch.nn.Sequential(
     torch.nn.Linear(2, 10), 
-    torch.nn.ReLu(), 
+    torch.nn.ReLU(),
     torch.nn.Linear(10, 2) 
     )
     
