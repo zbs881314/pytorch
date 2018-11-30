@@ -11,8 +11,8 @@ x = torch.unsqueeze(torch.linspace(-1, 1, 1000), dim=1)
 y = x.pow(2) + 0.1*torch.normal(torch.zeros(*x.size()))
 
 
-# plt.scatter(x.numpy(), y.numpy())
-# plt.show()
+#plt.scatter(x.numpy(), y.numpy())
+#plt.show()
 
 torch_dataset = Data.TensorDataset(x, y)
 loader = Data.DataLoader(dataset=torch_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2,)
