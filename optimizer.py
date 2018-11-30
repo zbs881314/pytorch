@@ -14,6 +14,9 @@ y = x.pow(2) + 0.1*torch.normal(torch.zeros(*x.size()))
 # plt.scatter(x.numpy(), y.numpy())
 # plt.show()
 
+torch_dataset = Data.TensorDataset(x, y)
+loader = Data.DataLoader(dataset=torch_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2,)
+
 class Net(torch.nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -34,10 +37,30 @@ if __name__ == '__main__':
     
     # different optimizers
     opt_SGD = torch.optim.SGD(net_SGD.parameters(), lr=LR)
-    opt_SGD = torch.optim.SGD(net_SGD.parameters(), lr=LR, momentum=0.8)
-    opt_SGD = torch.optim.RMSprop(net_SGD.parameters(), lr=LR, alpha=0.9)
-    opt_SGD = torch.optim.Adam(net_SGD.parameters(), lr=LR, betas=(0.9, 0.99))
-    
+    opt_Momentum = torch.optim.SGD(net_Momentum.parameters(), lr=LR, momentum=0.8)
+    opt_RMSprop = torch.optim.RMSprop(net_RMSprop.parameters(), lr=LR, alpha=0.9)
+    opt_Adam = torch.optim.Adam(net_Adam.parameters(), lr=LR, betas=(0.9, 0.99))
+    optimizers = [opt_SGD, opt_Momentum, opt_RMSprop, opt_Adam]
 
     loss_func = torch.nn.MSELoss()
     losses_his = [[], [], [], []]   #recode loss
+
+    for epoch in range(EPOCH):
+        print('Epoch:', epoch)
+        for step, (b_x, b_y) in enumerate(loader):
+            for net, opt, l_his in zip(nets, optimizers, losses_his):
+                output = net(b_x)
+                loss = loss_func(output, b_y)
+                opt.zero_grad()
+                loss.backward()
+                opt.step()
+                l_his.append(loss.data.numpy())
+
+    labels = ['SGD', 'Momentum', 'RMSprop', 'Adam']
+    for i, l_his in enumerate(losses_his):
+        plt.plot(l_his, label=labels[i])
+    plt.legend(loc='best')
+    plt.xlabel('Steps')
+    plt.ylabel('Loss')
+    plt.ylim(0, 0.2)
+    plt.show()
