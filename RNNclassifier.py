@@ -66,3 +66,23 @@ loss_func = nn.CrossEntropyLoss()
 
 # training and testing
 
+for epoch in range(EPOCH):
+    for step, (b_x, b_y) in enumerate(train_loader):
+        b_x = b_x.view(-1, 28, 28)    # reshape x to (batch, time_step, input_size)
+
+        output = rnn(b_x)
+        loss = loss_func(output, b_y)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if step % 50 == 0:
+            test_output = rnn(test_x)
+            pred_y = torch.max(test_output, 1)[1].data.numpy()
+            accuracy = float((pred_y == test_y).astype(int).sum()) / float(test_y.size)
+            print('Epoch:', epoch, '| train loss: %0.4f' % loss.data.numpy(), '| test accuracy: %0.2f' % accuracy)
+
+test_output = rnn(test_x[:10].view(-1, 28, 28))
+pred_y = torch.max(test_output, 1)[1].data.numpy()
+print(pred_y, 'prediction number')
+print(test_y[:10], 'real number')
