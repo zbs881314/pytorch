@@ -62,3 +62,16 @@ for step in range(10000):
     G_loss.backward()
     opt_G.step()
 
+    if step % 50 == 0:
+        plt.cla()
+        plt.plot(PAINT_POINTS[0], G_paintings.data.numpy()[0], c='#4AD631', lw=3, label='Generated painting', )
+        plt.plot(PAINT_POINTS[0], 2 * np.power(PAINT_POINTS[0], 2) + 1, c='#74BCFF', lw=3, label='upper bound')
+        plt.plot(PAINT_POINTS[0], 1 * np.power(PAINT_POINTS[0], 2) + 0, c='#FF9359', lw=3, label='lower bound')
+        plt.text(-.5, 2.3, 'D accuracy=%.2f (0.5 for D to converge)' % prob_artist0.data.numpy().mean(), fontdict={'size': 13})
+        plt.text(-.5, 2, 'D score=%.2f (-1.38 for G to converge)' % -D_loss.data.numpy(), fontdict={'size': 13})
+        plt.ylim((0, 3))
+        plt.legend(loc='upper right', fontsize=10)
+        plt.draw()
+        plt.pause(0.01)
+plt.ioff()
+plt.show()
